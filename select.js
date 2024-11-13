@@ -232,7 +232,14 @@
             // 初始化
             initializeOptions();
 
-            // 修改：更新选中项显示函数
+            // 新增：创建隐藏的input元素用于表单提交
+            const name = $container.attr('name') || '';
+            if (name) {
+                const $hiddenInput = $(`<input type="hidden" name="${name}">`);
+                $container.append($hiddenInput);
+            }
+
+            // 修改：更新选中项显示函数，同时更新隐藏input的值
             function updateSelection() {
                 if (settings.multiple) {
                     const $selectedItems = $('<div class="selected-items">');
@@ -264,11 +271,23 @@
                     }
 
                     $input.html(selectedItems.length ? $selectedItems : settings.placeholder);
+
+                    // 更新隐藏input的值
+                    if (name) {
+                        const value = selectedItems.map(item => item.id).join(',');
+                        $container.find(`input[name="${name}"]`).val(value);
+                    }
                 } else {
                     // 单选模式也应用文本截断
                     const text = selectedItems.length ? selectedItems[0].text : settings.placeholder;
                     const truncatedText = truncateText(text, settings.tagMaxLength);
                     $input.attr('title', text).text(truncatedText);
+
+                    // 更新隐藏input的值
+                    if (name) {
+                        const value = selectedItems[0]?.id || '';
+                        $container.find(`input[name="${name}"]`).val(value);
+                    }
                 }
                 
                 $clear.toggle(selectedItems.length > 0);
