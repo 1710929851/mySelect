@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select 组件使用示例</title>
+    <link rel="stylesheet" href="select.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="select.js"></script>
+    <style>
+        .demo-section {
+            margin: 30px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+        .code-block {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .description {
+            color: #666;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select 组件使用示例</h1>
+
+    <!-- 1. 基础用法 -->
+    <div class="demo-section">
+        <h2>1. 基础用法 - 单选</h2>
+        <div class="description">
+            最简单的单选使用方式，设置 data 数据源即可。
+        </div>
+        <div id="basic-select"></div>
+        <div class="code-block">
+            <pre>
+$('#basic-select').customSelect({
+    data: [{id: 1, text: '选项1'}, {id: 2, text: '选项2'}]
+});
+            </pre>
+        </div>
+    </div>
+
+    <!-- 2. 多选模式 -->
+    <div class="demo-section">
+        <h2>2. 多选模式</h2>
+        <div class="description">
+            设置 multiple: true 启用多选模式，可以通过 maxTagCount 控制最多显示的标签数量。
+        </div>
+        <div id="multi-select"></div>
+        <div class="code-block">
+            <pre>
+$('#multi-select').customSelect({
+    multiple: true,
+    maxTagCount: 3,
+    placeholder: '请选择多个选项',
+    data: [{id: 1, text: '选项1'}, {id: 2, text: '选项2'}]
+});
+            </pre>
+        </div>
+    </div>
+
+    <!-- 3. 标签文本长度限制 -->
+    <div class="demo-section">
+        <h2>3. 标签文本长度限制</h2>
+        <div class="description">
+            通过 tagMaxLength 控制标签文本的最大显示长度，超出部分显示省略号。
+        </div>
+        <div id="tag-length-select"></div>
+        <div class="code-block">
+            <pre>
+$('#tag-length-select').customSelect({
+    multiple: true,
+    tagMaxLength: 10,
+    data: [{id: 1, text: '这是一个很长的选项文本'}, {id: 2, text: '这也是一个很长的选项文本'}]
+});
+            </pre>
+        </div>
+    </div>
+
+    <!-- 4. 值回显 -->
+    <div class="demo-section">
+        <h2>4. 值回显</h2>
+        <div class="description">
+            可以通过 DOM 的 value 属性或 setValue 方法设置初始值。
+        </div>
+        <div id="value-select" value="1,2"></div>
+        <div class="code-block">
+            <pre>
+<!-- HTML -->
+<div id="value-select" value="1,2"></div>
+
+<!-- JavaScript -->
+$('#value-select').customSelect({
+    multiple: true,
+    data: [{id: 1, text: '选项1'}, {id: 2, text: '选项2'}]
+});
+            </pre>
+        </div>
+    </div>
+
+    <!-- 5. 事件回调 -->
+    <div class="demo-section">
+        <h2>5. 事件回调</h2>
+        <div class="description">
+            通过 onChange 回调函数监听选值变化。
+        </div>
+        <div id="callback-select"></div>
+        <div id="callback-result"></div>
+        <div class="code-block">
+            <pre>
+                $('#callback-select').customSelect({
+                    multiple: true,
+                    data: [{id: 1, text: '选项1'}, {id: 2, text: '选项2'}],
+                    onChange: function(selected) {
+                        $('#callback-result').html('当前选中: ' + selected.map(item => item.text).join(', '));
+                    }
+                });
+            </pre>
+        </div>
+    </div>
+
+    <!-- 6. 禁用状态 -->
+    <div class="demo-section">
+        <h2>6. 禁用状态</h2>
+        <div class="description">
+            可以通过 API 禁用/启用选择器。
+        </div>
+        <div id="disabled-select"></div>
+        <button onclick="toggleDisable()">切换禁用状态</button>
+        <div class="code-block">
+            <pre>
+                const select = $('#disabled-select').customSelect({
+                    data: [{id: 1, text: '选项1'}, {id: 2, text: '选项2'}]
+                });
+
+                // 禁用
+                select.data('customSelect').disable();
+
+                // 启用
+                select.data('customSelect').enable();
+            </pre>
+        </div>
+    </div>
+
+    <!-- 7. 表单提交示例 -->
+    <div class="demo-section">
+        <h2>7. 表单提交示例</h2>
+        <div class="description">
+            演示在表单中使用Select组件，并获取表单数据。
+        </div>
+        <form id="demoForm" onsubmit="return handleFormSubmit(event)">
+            <div style="margin-bottom: 15px;">
+                <label>姓名：</label>
+                <input type="text" name="name" value="张三"/>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>单选项：</label>
+                <div id="form-select" name="hobby" value="2"></div>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>多选项：</label>
+                <div id="form-multi-select" name="skills" value="1,3"></div>
+            </div>
+            <button type="submit">提交表单</button>
+        </form>
+        <div id="form-result" style="margin-top: 15px; display: none;">
+            <h4>表单数据：</h4>
+            <pre class="code-block"></pre>
+        </div>
+        <div class="code-block">
+            <pre>
+// HTML
+<form id="demoForm" onsubmit="return handleFormSubmit(event)">
+    <input type="text" name="name" value="张三">
+    <div id="form-select" name="hobby" value="2"></div>
+    <div id="form-multi-select" name="skills" value="1,3"></div>
+</form>
+            <pre>
+                // JavaScript
+                function handleFormSubmit(event) {
+                    event.preventDefault();
+                    const formData = {
+                        name: $('[name="name"]').val(),
+                        hobby: $('#form-select').data('customSelect').getValue(),
+                        skills: $('#form-multi-select').data('customSelect').getValue()
+                    };
+                    console.log('表单数据：', formData);
+                    return false;
+                }
+            </pre>
+        </div>
+    </div>
+
+    <!-- 8. 远程数据加载示例 -->
+    <div class="demo-section">
+        <h2>8. 远程数据加载示例</h2>
+        <div class="description">
+            演示从远程API加载数据并初始化Select组件。
+        </div>
+        <div id="remote-select" value="2"></div>
+        <div class="code-block">
+            <pre>
+                // 远程数据加载示例
+                async function initRemoteSelect() {
+                    try {
+                        // 模拟API请求
+                        const response = await fetch('https://api.example.com/options');
+                        const data = await response.json();
+                        
+                        $('#remote-select').customSelect({
+                            data: data,
+                            value: '2'  // 设置初始值
+                        });
+                    } catch (error) {
+                        console.error('加载数据失败：', error);
+                    }
+                }
+
+                // 这里使用模拟数据演示
+                setTimeout(() => {
+                    const mockData = [
+                        { id: 1, text: '远程选项1' },
+                        { id: 2, text: '远程选项2' },
+                        { id: 3, text: '远程选项3' }
+                    ];
+                    
+                    $('#remote-select').customSelect({
+                        data: mockData
+                    });
+                }, 1000);
+            </pre>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // 测试数据
+            const testData = Array.from({length: 20000}, (_, i) => ({
+                id: i + 1,
+                text: `选项 ${i + 1}`
+            }));
+
+            // 1. 基础用法
+            $('#basic-select').customSelect({
+                data: testData
+            });
+
+            // 2. 多选模式
+            $('#multi-select').customSelect({
+                multiple: true,
+                maxTagCount: 3,
+                placeholder: '请选择多个选项',
+                data: testData
+            });
+
+            // 3. 标签文本长度限制
+            $('#tag-length-select').customSelect({
+                multiple: true,
+                tagMaxLength: 10,
+                data: [
+                    {id: 1, text: '这是一个很长的选项文本'},
+                    {id: 2, text: '这也是一个很长的选项文本'}
+                ]
+            });
+
+            // 4. 值回显
+            $('#value-select').customSelect({
+                multiple: true,
+                data: testData
+            });
+
+            // 5. 事件回调
+            $('#callback-select').customSelect({
+                multiple: true,
+                data: testData,
+                onChange: function(selected) {
+                    $('#callback-result').html('当前选中: ' + 
+                        selected.map(item => item.text).join(', '));
+                }
+            });
+
+            // 6. 禁用状态
+            $('#disabled-select').customSelect({
+                data: testData
+            });
+        });
+
+        // 切换禁用状态
+        function toggleDisable() {
+            const select = $('#disabled-select');
+            const api = select.data('customSelect');
+            const isDisabled = select.find('.custom-select').hasClass('disabled');
+            
+            if (isDisabled) {
+                api.enable();
+            } else {
+                api.disable();
+            }
+        }
+
+        // 表单提交处理
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const formData = {
+                name: $('[name="name"]').val(),
+                hobby: {
+                    value: $('#form-select').attr('value'),
+                    selected: $('#form-select').data('customSelect').getValue()
+                },
+                skills: {
+                    value: $('#form-multi-select').attr('value'),
+                    selected: $('#form-multi-select').data('customSelect').getValue()
+                }
+            };
+            console.log(formData);
+            
+            
+            $('#form-result').show()
+                .find('pre').text(JSON.stringify(formData, null, 2));
+            
+            // 实际提交可以这样处理
+            // const formDataForSubmit = {
+            //     name: formData.name,
+            //     hobby: formData.hobby.selected[0]?.id,
+            //     skills: formData.skills.selected.map(item => item.id)
+            // };
+            // console.log('准备提交的数据：', formDataForSubmit);
+            
+            return false;
+        }
+
+        // 初始化表单示例
+        $('#form-select').customSelect({
+            data: [
+                { id: 1, text: '游泳' },
+                { id: 2, text: '跑步' },
+                { id: 3, text: '骑行' }
+            ]
+        });
+
+        $('#form-multi-select').customSelect({
+            multiple: true,
+            data: [
+                { id: 1, text: 'JavaScript' },
+                { id: 2, text: 'Python' },
+                { id: 3, text: 'Java' }
+            ]
+        });
+
+        // 模拟远程数据加载
+        setTimeout(() => {
+            const mockData = [
+                { id: 1, text: '远程选项1' },
+                { id: 2, text: '远程选项2' },
+                { id: 3, text: '远程选项3' }
+            ];
+            
+            $('#remote-select').customSelect({
+                data: mockData,
+                onChange: function(selected) {
+                    console.log('远程数据选择变化：', selected);
+                }
+            });
+        }, 1000);
+    </script>
+</body>
+</html>
